@@ -1,13 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import Header from './components/Layout/Header';
 import RoleSelector from './components/Login/RoleSelector';
 import StudentPage from './pages/StudentPage';
 import TeacherPage from './pages/TeacherPage';
+import RoleSwitchNotification from './components/Shared/RoleSwitchNotification';
+import { UserRole } from './types';
 
 const AppRoutes = () => {
   const { role } = useAuth();
+  const [showNotification, setShowNotification] = useState(false);
+  const [lastRole, setLastRole] = useState<UserRole>(null);
+
+  useEffect(() => {
+    if (role && lastRole && role !== lastRole) {
+      setShowNotification(true);
+    }
+    setLastRole(role);
+  }, [role, lastRole]);
 
   if (!role) {
     return <RoleSelector />;
@@ -25,6 +36,11 @@ const AppRoutes = () => {
           } />
         </Routes>
       </main>
+      <RoleSwitchNotification
+        role={role}
+        isVisible={showNotification}
+        onClose={() => setShowNotification(false)}
+      />
     </>
   );
 };

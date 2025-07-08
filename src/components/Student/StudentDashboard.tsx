@@ -3,6 +3,8 @@ import { mockAssignments } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
 import { Calendar, Clock, BarChart } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
+import { AssignmentStatus } from '../../types';
+import { getDaysUntilDue } from '../../utils/helpers';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
@@ -11,7 +13,7 @@ const StudentDashboard: React.FC = () => {
   const statusCounts = mockAssignments.reduce((acc, assignment) => {
     acc[assignment.status] = (acc[assignment.status] || 0) + 1;
     return acc;
-  }, {} as Record<string, number>);
+  }, {} as Record<AssignmentStatus, number>);
 
   const completedCount = (statusCounts['Submitted'] || 0) + (statusCounts['Graded'] || 0);
   const pendingCount = (statusCounts['Not Started'] || 0) + (statusCounts['In Progress'] || 0);
@@ -19,8 +21,13 @@ const StudentDashboard: React.FC = () => {
   // Calculate student's average score from completed assignments
   const studentAssignments = mockAssignments.filter(a => a.status === 'Graded');
   const averageScore = studentAssignments.length > 0 
-    ? studentAssignments.reduce((sum, _) => sum + 85, 0) / studentAssignments.length 
+    ? studentAssignments.reduce((sum) => sum + 85, 0) / studentAssignments.length 
     : 0;
+
+  // Get next due assignment
+  const nextDueAssignment = mockAssignments
+    .filter(a => a.status === 'Not Started' || a.status === 'In Progress')
+    .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -56,11 +63,22 @@ const StudentDashboard: React.FC = () => {
             <h3 className="font-semibold text-gray-700">Next Due</h3>
             <Clock className="h-5 w-5 text-purple-600" />
           </div>
-          <p className="text-lg font-medium text-gray-800 mb-1">Book Report Presentation</p>
-          <p className="text-sm text-gray-500 mb-3">Due in 3 days</p>
-          <div className="w-full bg-gray-200 rounded-full h-2">
-            <div className="bg-purple-600 h-2 rounded-full" style={{ width: '75%' }}></div>
-          </div>
+          {nextDueAssignment ? (
+            <>
+              <p className="text-lg font-medium text-gray-800 mb-1">{nextDueAssignment.title}</p>
+              <p className="text-sm text-gray-500 mb-3">
+                Due in {getDaysUntilDue(nextDueAssignment.dueDate)} days
+              </p>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div 
+                  className="bg-purple-600 h-2 rounded-full" 
+                  style={{ width: `${Math.max(0, 100 - (getDaysUntilDue(nextDueAssignment.dueDate) * 10))}%` }}
+                ></div>
+              </div>
+            </>
+          ) : (
+            <p className="text-gray-500">No upcoming assignments</p>
+          )}
         </div>
 
         <div className="bg-white rounded-lg shadow p-6 border border-slate-200">

@@ -1,47 +1,5 @@
 // Mock data for SpeakEasy prototype
-
-export interface Assignment {
-  id: string;
-  title: string;
-  description: string;
-  dueDate: string;
-  timeLimit: number; // in minutes
-  status: 'Not Started' | 'In Progress' | 'Submitted' | 'Graded';
-  difficulty: 'Easy' | 'Medium' | 'Hard';
-}
-
-export interface Report {
-  id: string;
-  assignmentId: string;
-  studentId: string;
-  overallScore: number;
-  tone: {
-    score: number;
-    feedback: string;
-  };
-  rhythm: {
-    score: number;
-    feedback: string;
-  };
-  bodyLanguage: {
-    score: number;
-    feedback: string;
-  };
-  fillerWords: {
-    um: number;
-    like: number;
-    youKnow: number;
-  };
-  recordingUrl: string;
-  submittedAt: string;
-}
-
-export interface Student {
-  id: string;
-  name: string;
-  grade: string;
-  averageScore: number;
-}
+import { Assignment, Report, Student, AssignmentStatus, AssignmentDifficulty } from '../types';
 
 // Mock assignments
 export const mockAssignments: Assignment[] = [
@@ -53,6 +11,8 @@ export const mockAssignments: Assignment[] = [
     timeLimit: 3,
     status: 'Not Started',
     difficulty: 'Medium',
+    createdAt: '2025-04-01',
+    updatedAt: '2025-04-01',
   },
   {
     id: 'a2',
@@ -62,6 +22,8 @@ export const mockAssignments: Assignment[] = [
     timeLimit: 4,
     status: 'In Progress',
     difficulty: 'Easy',
+    createdAt: '2025-03-28',
+    updatedAt: '2025-04-05',
   },
   {
     id: 'a3',
@@ -71,6 +33,8 @@ export const mockAssignments: Assignment[] = [
     timeLimit: 5,
     status: 'Not Started',
     difficulty: 'Hard',
+    createdAt: '2025-04-02',
+    updatedAt: '2025-04-02',
   },
   {
     id: 'a4',
@@ -80,26 +44,50 @@ export const mockAssignments: Assignment[] = [
     timeLimit: 3,
     status: 'Submitted',
     difficulty: 'Medium',
+    createdAt: '2025-03-25',
+    updatedAt: '2025-05-12',
+  },
+  {
+    id: 'a5',
+    title: 'Debate: Technology in Education',
+    description: 'Participate in a 4-minute debate about the role of technology in modern education.',
+    dueDate: '2025-04-30',
+    timeLimit: 4,
+    status: 'Graded',
+    difficulty: 'Hard',
+    createdAt: '2025-03-20',
+    updatedAt: '2025-05-01',
+  },
+  {
+    id: 'a6',
+    title: 'Personal Storytelling',
+    description: 'Share a 3-minute personal story that taught you an important lesson.',
+    dueDate: '2025-04-15',
+    timeLimit: 3,
+    status: 'Graded',
+    difficulty: 'Easy',
+    createdAt: '2025-03-10',
+    updatedAt: '2025-04-16',
   },
 ];
 
 // Mock students with realistic names and data
 export const mockStudents: Student[] = [
-  { id: 's1', name: 'Emma Thompson', grade: '8A', averageScore: 85 },
-  { id: 's2', name: 'Marcus Chen', grade: '8A', averageScore: 92 },
-  { id: 's3', name: 'Sofia Rodriguez', grade: '8B', averageScore: 78 },
-  { id: 's4', name: 'Lucas Williams', grade: '8A', averageScore: 88 },
-  { id: 's5', name: 'Ava Patel', grade: '8B', averageScore: 95 },
-  { id: 's6', name: 'Noah Kim', grade: '8A', averageScore: 83 },
-  { id: 's7', name: 'Isabella Garcia', grade: '8B', averageScore: 91 },
-  { id: 's8', name: 'Ethan Johnson', grade: '8A', averageScore: 76 },
-  { id: 's9', name: 'Olivia Brown', grade: '8B', averageScore: 89 },
-  { id: 's10', name: 'Alexander Lee', grade: '8A', averageScore: 94 },
-  { id: 's11', name: 'Mia Anderson', grade: '8B', averageScore: 87 },
-  { id: 's12', name: 'William Zhang', grade: '8A', averageScore: 93 },
-  { id: 's13', name: 'Charlotte Davis', grade: '8B', averageScore: 82 },
-  { id: 's14', name: 'James Wilson', grade: '8A', averageScore: 86 },
-  { id: 's15', name: 'Sophia Martinez', grade: '8B', averageScore: 90 }
+  { id: 's1', name: 'Emma Thompson', grade: '8A', averageScore: 85, email: 'emma.thompson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s1' },
+  { id: 's2', name: 'Marcus Chen', grade: '8A', averageScore: 92, email: 'marcus.chen@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s2' },
+  { id: 's3', name: 'Sofia Rodriguez', grade: '8B', averageScore: 78, email: 'sofia.rodriguez@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s3' },
+  { id: 's4', name: 'Lucas Williams', grade: '8A', averageScore: 88, email: 'lucas.williams@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s4' },
+  { id: 's5', name: 'Ava Patel', grade: '8B', averageScore: 95, email: 'ava.patel@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s5' },
+  { id: 's6', name: 'Noah Kim', grade: '8A', averageScore: 83, email: 'noah.kim@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s6' },
+  { id: 's7', name: 'Isabella Garcia', grade: '8B', averageScore: 91, email: 'isabella.garcia@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s7' },
+  { id: 's8', name: 'Ethan Johnson', grade: '8A', averageScore: 76, email: 'ethan.johnson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s8' },
+  { id: 's9', name: 'Olivia Brown', grade: '8B', averageScore: 89, email: 'olivia.brown@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s9' },
+  { id: 's10', name: 'Alexander Lee', grade: '8A', averageScore: 94, email: 'alexander.lee@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s10' },
+  { id: 's11', name: 'Mia Anderson', grade: '8B', averageScore: 87, email: 'mia.anderson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s11' },
+  { id: 's12', name: 'William Zhang', grade: '8A', averageScore: 93, email: 'william.zhang@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s12' },
+  { id: 's13', name: 'Charlotte Davis', grade: '8B', averageScore: 82, email: 'charlotte.davis@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s13' },
+  { id: 's14', name: 'James Wilson', grade: '8A', averageScore: 86, email: 'james.wilson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s14' },
+  { id: 's15', name: 'Sophia Martinez', grade: '8B', averageScore: 90, email: 'sophia.martinez@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s15' }
 ];
 
 // Mock reports
@@ -128,6 +116,7 @@ export const mockReports: Report[] = [
     },
     recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     submittedAt: '2025-05-12',
+    gradedAt: '2025-05-13',
   },
   {
     id: 'r2',
@@ -153,6 +142,59 @@ export const mockReports: Report[] = [
     },
     recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     submittedAt: '2025-05-08',
+    gradedAt: '2025-05-09',
+  },
+  {
+    id: 'r3',
+    assignmentId: 'a5',
+    studentId: 's1',
+    overallScore: 88,
+    tone: {
+      score: 85,
+      feedback: 'Good tone variation',
+    },
+    rhythm: {
+      score: 90,
+      feedback: 'Excellent pacing',
+    },
+    bodyLanguage: {
+      score: 85,
+      feedback: 'Good posture and gestures',
+    },
+    fillerWords: {
+      um: 2,
+      like: 1,
+      youKnow: 1,
+    },
+    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    submittedAt: '2025-04-30',
+    gradedAt: '2025-05-01',
+  },
+  {
+    id: 'r4',
+    assignmentId: 'a6',
+    studentId: 's1',
+    overallScore: 92,
+    tone: {
+      score: 95,
+      feedback: 'Excellent emotional expression',
+    },
+    rhythm: {
+      score: 90,
+      feedback: 'Great storytelling rhythm',
+    },
+    bodyLanguage: {
+      score: 88,
+      feedback: 'Very engaging presence',
+    },
+    fillerWords: {
+      um: 1,
+      like: 0,
+      youKnow: 1,
+    },
+    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    submittedAt: '2025-04-15',
+    gradedAt: '2025-04-16',
   },
 ];
 
@@ -191,5 +233,23 @@ export const generateRandomReport = (assignmentId: string, studentId: string): R
     },
     recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
     submittedAt: new Date().toISOString(),
+    gradedAt: new Date().toISOString(),
   };
+};
+
+// Helper functions
+export const getStudentById = (id: string): Student | undefined => {
+  return mockStudents.find(student => student.id === id);
+};
+
+export const getAssignmentById = (id: string): Assignment | undefined => {
+  return mockAssignments.find(assignment => assignment.id === id);
+};
+
+export const getReportsByStudentId = (studentId: string): Report[] => {
+  return mockReports.filter(report => report.studentId === studentId);
+};
+
+export const getReportsByAssignmentId = (assignmentId: string): Report[] => {
+  return mockReports.filter(report => report.assignmentId === assignmentId);
 };

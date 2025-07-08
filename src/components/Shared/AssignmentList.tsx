@@ -1,13 +1,16 @@
 import React from 'react';
 import { mockAssignments } from '../../data/mockData';
 import { useNavigate } from 'react-router-dom';
-import { Calendar, Clock, AlertTriangle } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
+import { Assignment, UserRole } from '../../types';
+import { formatDate, getDifficultyColor, getStatusColor } from '../../utils/helpers';
 
 interface AssignmentListProps {
-  userRole: 'student' | 'teacher';
+  userRole: UserRole;
+  assignments?: Assignment[];
 }
 
-const AssignmentList: React.FC<AssignmentListProps> = ({ userRole }) => {
+const AssignmentList: React.FC<AssignmentListProps> = ({ userRole, assignments = mockAssignments }) => {
   const navigate = useNavigate();
 
   const handleAssignmentClick = (assignmentId: string) => {
@@ -15,34 +18,6 @@ const AssignmentList: React.FC<AssignmentListProps> = ({ userRole }) => {
       navigate(`/student/assignment/${assignmentId}`);
     } else {
       navigate(`/teacher/assignment/${assignmentId}`);
-    }
-  };
-
-  const getDifficultyColor = (difficulty: string) => {
-    switch (difficulty) {
-      case 'Easy':
-        return 'bg-green-100 text-green-800';
-      case 'Medium':
-        return 'bg-amber-100 text-amber-800';
-      case 'Hard':
-        return 'bg-red-100 text-red-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Not Started':
-        return 'text-gray-600';
-      case 'In Progress':
-        return 'text-blue-600';
-      case 'Submitted':
-        return 'text-green-600';
-      case 'Graded':
-        return 'text-purple-600';
-      default:
-        return 'text-gray-600';
     }
   };
 
@@ -59,7 +34,7 @@ const AssignmentList: React.FC<AssignmentListProps> = ({ userRole }) => {
           </tr>
         </thead>
         <tbody className="divide-y divide-slate-200">
-          {mockAssignments.map((assignment) => (
+          {assignments.map((assignment) => (
             <tr 
               key={assignment.id} 
               className="hover:bg-slate-50 cursor-pointer transition-colors"
@@ -75,7 +50,7 @@ const AssignmentList: React.FC<AssignmentListProps> = ({ userRole }) => {
                 <div className="flex items-center">
                   <Calendar className="h-4 w-4 text-gray-400 mr-1" />
                   <span className="text-sm text-gray-600">
-                    {new Date(assignment.dueDate).toLocaleDateString()}
+                    {formatDate(assignment.dueDate)}
                   </span>
                 </div>
               </td>

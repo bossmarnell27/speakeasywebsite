@@ -5,16 +5,18 @@ import { Users, CheckCircle, Calendar, BarChart } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
 import CreateAssignmentModal from './CreateAssignmentModal';
 import { useNavigate } from 'react-router-dom';
+import { Assignment } from '../../types';
 
 const TeacherDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'students'>('overview');
+  const [assignments, setAssignments] = useState(mockAssignments);
 
   // Calculate stats
-  const totalAssignments = mockAssignments.length;
-  const submittedAssignments = mockAssignments.filter(
+  const totalAssignments = assignments.length;
+  const submittedAssignments = assignments.filter(
     a => a.status === 'Submitted' || a.status === 'Graded'
   ).length;
   
@@ -24,9 +26,17 @@ const TeacherDashboard: React.FC = () => {
     0
   ) / mockStudents.length;
 
-  const handleCreateAssignment = (assignmentData: any) => {
-    // In a real app, this would make an API call to create the assignment
-    console.log('Creating assignment:', assignmentData);
+  const handleCreateAssignment = (assignmentData: Omit<Assignment, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => {
+    const newAssignment: Assignment = {
+      ...assignmentData,
+      id: `a${Date.now()}`,
+      status: 'Not Started',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+    
+    setAssignments(prev => [newAssignment, ...prev]);
+    console.log('Created assignment:', newAssignment);
   };
 
   const handleStudentClick = (studentId: string) => {
@@ -127,7 +137,7 @@ const TeacherDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-slate-200 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Class Assignments</h2>
-              <AssignmentList userRole="teacher" />
+              <AssignmentList userRole="teacher" assignments={assignments} />
             </div>
             
             <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
@@ -141,7 +151,7 @@ const TeacherDashboard: React.FC = () => {
                   >
                     <div className="flex items-center">
                       <img 
-                        src={`https://i.pravatar.cc/40?u=${student.id}`} 
+                        src={student.avatarUrl || `https://i.pravatar.cc/40?u=${student.id}`}
                         alt={student.name} 
                         className="w-10 h-10 rounded-full mr-3" 
                       />
@@ -203,7 +213,7 @@ const TeacherDashboard: React.FC = () => {
                     <td className="py-4 px-6">
                       <div className="flex items-center">
                         <img
-                          src={`https://i.pravatar.cc/40?u=${student.id}`}
+                          src={student.avatarUrl || `https://i.pravatar.cc/40?u=${student.id}`}
                           alt={student.name}
                           className="w-8 h-8 rounded-full mr-3"
                         />

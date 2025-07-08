@@ -1,205 +1,77 @@
-// Mock data for SpeakEasy prototype
+// Mock data for SpeakEasy prototype - Single student and assignment
 import { Assignment, Report, Student, AssignmentStatus, AssignmentDifficulty } from '../types';
 
-// Mock assignments
+// Single mock assignment
 export const mockAssignments: Assignment[] = [
   {
-    id: 'a1',
+    id: '550e8400-e29b-41d4-a716-446655440003',
     title: 'Persuasive Speech: Environmental Action',
-    description: 'Prepare a 3-minute persuasive speech about an environmental issue you care about.',
+    description: 'Prepare a 3-minute persuasive speech about an environmental issue you care about. Focus on clear arguments, emotional appeal, and call to action.',
     dueDate: '2025-05-15',
     timeLimit: 3,
-    status: 'Not Started',
+    status: 'Graded',
     difficulty: 'Medium',
     createdAt: '2025-04-01',
-    updatedAt: '2025-04-01',
-  },
-  {
-    id: 'a2',
-    title: 'Book Report Presentation',
-    description: 'Present a 4-minute summary and analysis of the book you read this month.',
-    dueDate: '2025-05-10',
-    timeLimit: 4,
-    status: 'In Progress',
-    difficulty: 'Easy',
-    createdAt: '2025-03-28',
-    updatedAt: '2025-04-05',
-  },
-  {
-    id: 'a3',
-    title: 'Science Fair Project Pitch',
-    description: 'Deliver a 5-minute pitch explaining your science fair project and findings.',
-    dueDate: '2025-05-25',
-    timeLimit: 5,
-    status: 'Not Started',
-    difficulty: 'Hard',
-    createdAt: '2025-04-02',
-    updatedAt: '2025-04-02',
-  },
-  {
-    id: 'a4',
-    title: 'Historical Figure Biography',
-    description: 'Present a 3-minute biography of a historical figure of your choice.',
-    dueDate: '2025-05-20',
-    timeLimit: 3,
-    status: 'Submitted',
-    difficulty: 'Medium',
-    createdAt: '2025-03-25',
-    updatedAt: '2025-05-12',
-  },
-  {
-    id: 'a5',
-    title: 'Debate: Technology in Education',
-    description: 'Participate in a 4-minute debate about the role of technology in modern education.',
-    dueDate: '2025-04-30',
-    timeLimit: 4,
-    status: 'Graded',
-    difficulty: 'Hard',
-    createdAt: '2025-03-20',
-    updatedAt: '2025-05-01',
-  },
-  {
-    id: 'a6',
-    title: 'Personal Storytelling',
-    description: 'Share a 3-minute personal story that taught you an important lesson.',
-    dueDate: '2025-04-15',
-    timeLimit: 3,
-    status: 'Graded',
-    difficulty: 'Easy',
-    createdAt: '2025-03-10',
-    updatedAt: '2025-04-16',
-  },
+    updatedAt: '2025-05-13',
+  }
 ];
 
-// Mock students with realistic names and data
+// Single mock student
 export const mockStudents: Student[] = [
-  { id: 's1', name: 'Emma Thompson', grade: '8A', averageScore: 85, email: 'emma.thompson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s1' },
-  { id: 's2', name: 'Marcus Chen', grade: '8A', averageScore: 92, email: 'marcus.chen@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s2' },
-  { id: 's3', name: 'Sofia Rodriguez', grade: '8B', averageScore: 78, email: 'sofia.rodriguez@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s3' },
-  { id: 's4', name: 'Lucas Williams', grade: '8A', averageScore: 88, email: 'lucas.williams@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s4' },
-  { id: 's5', name: 'Ava Patel', grade: '8B', averageScore: 95, email: 'ava.patel@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s5' },
-  { id: 's6', name: 'Noah Kim', grade: '8A', averageScore: 83, email: 'noah.kim@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s6' },
-  { id: 's7', name: 'Isabella Garcia', grade: '8B', averageScore: 91, email: 'isabella.garcia@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s7' },
-  { id: 's8', name: 'Ethan Johnson', grade: '8A', averageScore: 76, email: 'ethan.johnson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s8' },
-  { id: 's9', name: 'Olivia Brown', grade: '8B', averageScore: 89, email: 'olivia.brown@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s9' },
-  { id: 's10', name: 'Alexander Lee', grade: '8A', averageScore: 94, email: 'alexander.lee@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s10' },
-  { id: 's11', name: 'Mia Anderson', grade: '8B', averageScore: 87, email: 'mia.anderson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s11' },
-  { id: 's12', name: 'William Zhang', grade: '8A', averageScore: 93, email: 'william.zhang@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s12' },
-  { id: 's13', name: 'Charlotte Davis', grade: '8B', averageScore: 82, email: 'charlotte.davis@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s13' },
-  { id: 's14', name: 'James Wilson', grade: '8A', averageScore: 86, email: 'james.wilson@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s14' },
-  { id: 's15', name: 'Sophia Martinez', grade: '8B', averageScore: 90, email: 'sophia.martinez@school.edu', avatarUrl: 'https://i.pravatar.cc/150?u=s15' }
+  { 
+    id: '550e8400-e29b-41d4-a716-446655440002', 
+    name: 'Emma Thompson', 
+    grade: '8A', 
+    averageScore: 88, 
+    email: 'emma.thompson@school.edu', 
+    avatarUrl: 'https://i.pravatar.cc/150?u=emma' 
+  }
 ];
 
-// Mock reports
+// Single mock teacher
+export const mockTeacher = {
+  id: '550e8400-e29b-41d4-a716-446655440001',
+  name: 'Ms. Johnson',
+  email: 'ms.johnson@school.edu',
+  avatarUrl: 'https://i.pravatar.cc/150?u=teacher'
+};
+
+// Single mock report
 export const mockReports: Report[] = [
   {
     id: 'r1',
-    assignmentId: 'a4',
-    studentId: 's1',
-    overallScore: 95,
-    tone: {
-      score: 80,
-      feedback: 'Work on volume',
-    },
-    rhythm: {
-      score: 90,
-      feedback: 'Work on pace',
-    },
-    bodyLanguage: {
-      score: 90,
-      feedback: 'Great eye contact',
-    },
-    fillerWords: {
-      um: 3,
-      like: 2,
-      youKnow: 2,
-    },
-    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    submittedAt: '2025-05-12',
-    gradedAt: '2025-05-13',
-  },
-  {
-    id: 'r2',
-    assignmentId: 'a2',
-    studentId: 's2',
-    overallScore: 75,
-    tone: {
-      score: 80,
-      feedback: 'Work on volume',
-    },
-    rhythm: {
-      score: 90,
-      feedback: 'Work on pauses',
-    },
-    bodyLanguage: {
-      score: 90,
-      feedback: 'Improve gestures',
-    },
-    fillerWords: {
-      um: 3,
-      like: 2,
-      youKnow: 2,
-    },
-    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    submittedAt: '2025-05-08',
-    gradedAt: '2025-05-09',
-  },
-  {
-    id: 'r3',
-    assignmentId: 'a5',
-    studentId: 's1',
+    assignmentId: '550e8400-e29b-41d4-a716-446655440003',
+    studentId: '550e8400-e29b-41d4-a716-446655440002',
     overallScore: 88,
     tone: {
       score: 85,
-      feedback: 'Good tone variation',
+      feedback: 'Good vocal variety and emotional expression. Try to project your voice more in the conclusion.',
     },
     rhythm: {
       score: 90,
-      feedback: 'Excellent pacing',
+      feedback: 'Excellent pacing throughout the speech. Good use of pauses for emphasis.',
     },
     bodyLanguage: {
-      score: 85,
-      feedback: 'Good posture and gestures',
+      score: 86,
+      feedback: 'Strong eye contact and confident posture. Consider using more hand gestures to emphasize key points.',
     },
     fillerWords: {
       um: 2,
       like: 1,
       youKnow: 1,
     },
-    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    submittedAt: '2025-04-30',
-    gradedAt: '2025-05-01',
-  },
-  {
-    id: 'r4',
-    assignmentId: 'a6',
-    studentId: 's1',
-    overallScore: 92,
-    tone: {
-      score: 95,
-      feedback: 'Excellent emotional expression',
-    },
-    rhythm: {
-      score: 90,
-      feedback: 'Great storytelling rhythm',
-    },
-    bodyLanguage: {
-      score: 88,
-      feedback: 'Very engaging presence',
-    },
-    fillerWords: {
-      um: 1,
-      like: 0,
-      youKnow: 1,
-    },
-    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-    submittedAt: '2025-04-15',
-    gradedAt: '2025-04-16',
-  },
+    recordingUrl: 'https://example.com/recording/emma-speech-1',
+    submittedAt: '2025-05-12T10:30:00Z',
+    gradedAt: '2025-05-13T14:20:00Z',
+  }
 ];
 
-// Function to generate a random report
+// Function to generate a random report (keeping for compatibility)
 export const generateRandomReport = (assignmentId: string, studentId: string): Report => {
+  // Return the existing report if it matches, otherwise create a new one
+  const existingReport = mockReports.find(r => r.assignmentId === assignmentId && r.studentId === studentId);
+  if (existingReport) return existingReport;
+
   const overallScore = Math.floor(Math.random() * 31) + 70; // 70-100
   const toneScore = Math.floor(Math.random() * 31) + 70;
   const rhythmScore = Math.floor(Math.random() * 31) + 70;
@@ -231,7 +103,7 @@ export const generateRandomReport = (assignmentId: string, studentId: string): R
       like: Math.floor(Math.random() * 5),
       youKnow: Math.floor(Math.random() * 4),
     },
-    recordingUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    recordingUrl: 'https://example.com/recording/sample',
     submittedAt: new Date().toISOString(),
     gradedAt: new Date().toISOString(),
   };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { mockAssignments } from '../../data/mockData';
+import { mockAssignments, mockTeacher } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
 import { Calendar, Clock, BarChart } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
@@ -33,10 +33,10 @@ const StudentDashboard: React.FC = () => {
     <div className="container mx-auto px-4 py-8">
       <div className="mb-8">
         <h1 className="text-2xl font-bold text-gray-800 mb-2">
-          Welcome back, {user?.name || 'Student'}
+          Welcome back, Emma Thompson
         </h1>
         <p className="text-gray-600">
-          Track your assignments and improve your communication skills.
+          Track your assignment from {mockTeacher.name} and improve your communication skills.
         </p>
       </div>
 
@@ -49,7 +49,7 @@ const StudentDashboard: React.FC = () => {
           <div className="flex justify-between items-center">
             <div>
               <p className="text-3xl font-bold text-gray-800">{mockAssignments.length}</p>
-              <p className="text-sm text-gray-500">Total Assignments</p>
+              <p className="text-sm text-gray-500">Total Assignment</p>
             </div>
             <div className="text-right">
               <p className="text-green-600">{completedCount} Completed</p>
@@ -96,7 +96,7 @@ const StudentDashboard: React.FC = () => {
       </div>
 
       <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-4">Your Assignments</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-4">Your Assignment</h2>
         <AssignmentList userRole="student" />
       </div>
     </div>

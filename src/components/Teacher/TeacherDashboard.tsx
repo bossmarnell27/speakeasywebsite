@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockAssignments, mockStudents } from '../../data/mockData';
+import { mockAssignments, mockStudents, mockTeacher } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
 import { Users, CheckCircle, Calendar, BarChart } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
@@ -20,11 +20,8 @@ const TeacherDashboard: React.FC = () => {
     a => a.status === 'Submitted' || a.status === 'Graded'
   ).length;
   
-  // Calculate average scores
-  const averageScore = mockStudents.reduce(
-    (sum, student) => sum + student.averageScore, 
-    0
-  ) / mockStudents.length;
+  // Calculate average score (single student)
+  const averageScore = mockStudents.length > 0 ? mockStudents[0].averageScore : 0;
 
   const handleCreateAssignment = (assignmentData: Omit<Assignment, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => {
     const newAssignment: Assignment = {
@@ -48,10 +45,10 @@ const TeacherDashboard: React.FC = () => {
       <div className="mb-8 flex justify-between items-center">
         <div>
           <h1 className="text-2xl font-bold text-gray-800 mb-2">
-            Welcome, {user?.name || 'Teacher'}
+            Welcome, {mockTeacher.name}
           </h1>
           <p className="text-gray-600">
-            Manage your class assignments and review student progress.
+            Manage your class assignments and review {mockStudents[0]?.name}'s progress.
           </p>
         </div>
         <button 
@@ -99,11 +96,11 @@ const TeacherDashboard: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-700">Students</h3>
+                <h3 className="font-semibold text-gray-700">Student</h3>
                 <Users className="h-5 w-5 text-indigo-600" />
               </div>
               <p className="text-3xl font-bold text-gray-800">{mockStudents.length}</p>
-              <p className="text-sm text-gray-500">Active Students</p>
+              <p className="text-sm text-gray-500">Active Student</p>
             </div>
 
             <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
@@ -126,24 +123,24 @@ const TeacherDashboard: React.FC = () => {
 
             <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-700">Average Score</h3>
+                <h3 className="font-semibold text-gray-700">Student Score</h3>
                 <BarChart className="h-5 w-5 text-cyan-600" />
               </div>
-              <p className="text-3xl font-bold text-gray-800">{averageScore.toFixed(1)}%</p>
-              <p className="text-sm text-gray-500">Class Average</p>
+              <p className="text-3xl font-bold text-gray-800">{averageScore}%</p>
+              <p className="text-sm text-gray-500">{mockStudents[0]?.name}'s Score</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-slate-200 p-6">
-              <h2 className="text-xl font-bold text-gray-800 mb-4">Class Assignments</h2>
+              <h2 className="text-xl font-bold text-gray-800 mb-4">Assignments</h2>
               <AssignmentList userRole="teacher" assignments={assignments} />
             </div>
             
             <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Recent Submissions</h2>
               <div className="space-y-4">
-                {mockStudents.slice(0, 5).map(student => (
+                {mockStudents.slice(0, 1).map(student => (
                   <div 
                     key={student.id} 
                     className="flex items-center justify-between p-3 border border-slate-200 rounded-lg hover:bg-slate-50 transition-colors cursor-pointer"
@@ -157,14 +154,14 @@ const TeacherDashboard: React.FC = () => {
                       />
                       <div>
                         <p className="font-medium text-gray-800">{student.name}</p>
-                        <p className="text-sm text-gray-500">Book Report Presentation</p>
+                        <p className="text-sm text-gray-500">{mockAssignments[0]?.title}</p>
                       </div>
                     </div>
                     <div className="text-right">
                       <p className={`font-bold ${student.averageScore >= 85 ? 'text-green-600' : 'text-amber-600'}`}>
                         {student.averageScore}%
                       </p>
-                      <p className="text-xs text-gray-500">2 days ago</p>
+                      <p className="text-xs text-gray-500">1 day ago</p>
                     </div>
                   </div>
                 ))}
@@ -176,18 +173,13 @@ const TeacherDashboard: React.FC = () => {
         <div className="bg-white rounded-lg shadow-md border border-slate-200">
           <div className="p-6 border-b border-slate-200">
             <div className="flex items-center justify-between">
-              <h2 className="text-xl font-bold text-gray-800">Students</h2>
+              <h2 className="text-xl font-bold text-gray-800">Student</h2>
               <div className="flex items-center space-x-2">
                 <input
                   type="text"
-                  placeholder="Search students..."
+                  placeholder="Search student..."
                   className="border border-slate-200 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <select className="border border-slate-200 rounded-md px-3 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                  <option value="all">All Grades</option>
-                  <option value="8A">Grade 8A</option>
-                  <option value="8B">Grade 8B</option>
-                </select>
               </div>
             </div>
           </div>
@@ -198,7 +190,7 @@ const TeacherDashboard: React.FC = () => {
                 <tr className="bg-slate-50">
                   <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Student</th>
                   <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Grade</th>
-                  <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Average Score</th>
+                  <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Score</th>
                   <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Assignments Completed</th>
                   <th className="text-left py-3 px-6 text-sm font-medium text-gray-500">Last Submission</th>
                 </tr>
@@ -244,9 +236,10 @@ const TeacherDashboard: React.FC = () => {
                     </td>
                     <td className="py-4 px-6">
                       <span className="text-gray-600">3/4</span>
+                      <span className="text-gray-600">1/1</span>
                     </td>
                     <td className="py-4 px-6">
-                      <span className="text-gray-600">2 days ago</span>
+                      <span className="text-gray-600">1 day ago</span>
                     </td>
                   </tr>
                 ))}

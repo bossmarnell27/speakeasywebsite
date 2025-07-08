@@ -61,6 +61,14 @@ export interface Student {
   averageScore: number;
   email?: string;
   avatarUrl?: string;
+  teacherId?: string;
+}
+
+export interface Teacher {
+  id: string;
+  name: string;
+  email: string;
+  avatarUrl?: string;
 }
 
 export interface AuthContextType {

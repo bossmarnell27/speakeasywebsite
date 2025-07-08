@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { mockStudents, mockTeacher } from '../../data/mockData';
+import { mockStudents, mockTeacher, mockAssignments } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
 import { Users, CheckCircle, Calendar, BarChart, AlertCircle } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';

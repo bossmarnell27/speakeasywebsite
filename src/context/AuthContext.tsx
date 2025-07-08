@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 import { User, UserRole, AuthContextType } from '../types';
+import { mockTeacher, mockStudents } from '../data/mockData';
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
@@ -26,11 +27,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     // Simulate API call
     setTimeout(() => {
       const mockUser: User = {
-        id: selectedRole === 'teacher' ? 't1' : 's1',
-        name: selectedRole === 'teacher' ? 'Ms. Johnson' : 'Emma Thompson',
+        id: selectedRole === 'teacher' ? mockTeacher.id : mockStudents[0].id,
+        name: selectedRole === 'teacher' ? mockTeacher.name : mockStudents[0].name,
         role: selectedRole,
         avatarUrl: `https://i.pravatar.cc/150?u=${selectedRole}`,
-        email: selectedRole === 'teacher' ? 'ms.johnson@school.edu' : 'emma.thompson@school.edu',
+        email: selectedRole === 'teacher' ? mockTeacher.email : mockStudents[0].email,
       };
       
       setUser(mockUser);

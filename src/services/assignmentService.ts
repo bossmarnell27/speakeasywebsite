@@ -79,13 +79,20 @@ export const assignmentService = {
   // Get all assignments for a teacher
   async getTeacherAssignments(teacherId: string): Promise<Assignment[]> {
     try {
+      console.log('Fetching assignments for teacher:', teacherId)
+      
       const { data, error } = await supabase
         .from('assignments')
         .select('*')
         .eq('teacher_id', teacherId)
         .order('created_at', { ascending: false })
 
-      if (error) throw error
+      if (error) {
+        console.error('Supabase error:', error)
+        throw error
+      }
+
+      console.log('Fetched assignments:', data)
 
       return data.map(assignment => ({
         id: assignment.id,
@@ -100,7 +107,13 @@ export const assignmentService = {
       }))
     } catch (error) {
       console.error('Error fetching teacher assignments:', error)
-      throw new Error('Failed to fetch assignments')
+      
+      // Provide more specific error messages
+      if (error instanceof TypeError && error.message.includes('Failed to fetch')) {
+        throw new Error('Unable to connect to database. Please check your internet connection and try again.')
+      }
+      
+      throw new Error(`Failed to fetch assignments: ${error.message || 'Unknown error'}`)
     }
   },
 

@@ -31,10 +31,13 @@ const TeacherDashboard: React.FC = () => {
     try {
       setLoading(true);
       setError(null);
+      console.log('Loading assignments for user:', user.id);
       const teacherAssignments = await assignmentService.getTeacherAssignments(user.id);
+      console.log('Loaded assignments:', teacherAssignments);
       setAssignments(teacherAssignments);
     } catch (err) {
-      setError('Failed to load assignments');
+      const errorMessage = err instanceof Error ? err.message : 'Failed to load assignments';
+      setError(errorMessage);
       console.error('Error loading assignments:', err);
     } finally {
       setLoading(false);

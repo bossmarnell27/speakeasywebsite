@@ -3,11 +3,29 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
+console.log('Supabase URL:', supabaseUrl)
+console.log('Supabase Anon Key exists:', !!supabaseAnonKey)
+
 if (!supabaseUrl || !supabaseAnonKey) {
   throw new Error('Missing Supabase environment variables')
 }
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+  auth: {
+    persistSession: false
+  }
+})
+
+// Test connection
+supabase.from('teachers').select('count').limit(1).then(
+  ({ data, error }) => {
+    if (error) {
+      console.error('Supabase connection test failed:', error)
+    } else {
+      console.log('Supabase connection test successful')
+    }
+  }
+)
 
 // Database types based on schema
 export interface Database {

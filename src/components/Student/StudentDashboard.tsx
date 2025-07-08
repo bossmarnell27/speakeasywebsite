@@ -1,16 +1,44 @@
 import React from 'react';
-import { mockAssignments, mockTeacher } from '../../data/mockData';
+import { mockTeacher } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
-import { Calendar, Clock, BarChart } from 'lucide-react';
+import { Calendar, Clock, BarChart, AlertCircle } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
-import { AssignmentStatus } from '../../types';
+import { AssignmentStatus, Assignment } from '../../types';
 import { getDaysUntilDue } from '../../utils/helpers';
+import { assignmentService, AssignmentWithStatus } from '../../services/assignmentService';
+import { useState, useEffect } from 'react';
 
 const StudentDashboard: React.FC = () => {
   const { user } = useAuth();
+  const [assignments, setAssignments] = useState<AssignmentWithStatus[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load student assignments when component mounts
+  useEffect(() => {
+    if (user?.id) {
+      loadStudentAssignments();
+    }
+  }, [user?.id]);
+
+  const loadStudentAssignments = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const studentAssignments = await assignmentService.getStudentAssignments(user.id);
+      setAssignments(studentAssignments);
+    } catch (err) {
+      setError('Failed to load assignments');
+      console.error('Error loading student assignments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Count assignments by status
-  const statusCounts = mockAssignments.reduce((acc, assignment) => {
+  const statusCounts = assignments.reduce((acc, assignment) => {
     acc[assignment.status] = (acc[assignment.status] || 0) + 1;
     return acc;
   }, {} as Record<AssignmentStatus, number>);
@@ -19,13 +47,13 @@ const StudentDashboard: React.FC = () => {
   const pendingCount = (statusCounts['Not Started'] || 0) + (statusCounts['In Progress'] || 0);
 
   // Calculate student's average score from completed assignments
-  const studentAssignments = mockAssignments.filter(a => a.status === 'Graded');
-  const averageScore = studentAssignments.length > 0 
-    ? studentAssignments.reduce((sum) => sum + 85, 0) / studentAssignments.length 
+  const gradedAssignments = assignments.filter(a => a.status === 'Graded');
+  const averageScore = gradedAssignments.length > 0 
+    ? gradedAssignments.reduce((sum) => sum + 85, 0) / gradedAssignments.length 
     : 0;
 
   // Get next due assignment
-  const nextDueAssignment = mockAssignments
+  const nextDueAssignment = assignments
     .filter(a => a.status === 'Not Started' || a.status === 'In Progress')
     .sort((a, b) => new Date(a.dueDate).getTime() - new Date(b.dueDate).getTime())[0];
 
@@ -40,6 +68,19 @@ const StudentDashboard: React.FC = () => {
         </p>
       </div>
 
+      {error && (
+        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+          <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+          <span className="text-red-700">{error}</span>
+          <button 
+            onClick={loadStudentAssignments}
+            className="ml-auto text-red-600 hover:text-red-800 text-sm font-medium"
+          >
+            Retry
+          </button>
+        </div>
+      )}
+
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
         <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
           <div className="flex items-center justify-between mb-4">
@@ -48,7 +89,7 @@ const StudentDashboard: React.FC = () => {
           </div>
           <div className="flex justify-between items-center">
             <div>
-              <p className="text-3xl font-bold text-gray-800">{mockAssignments.length}</p>
+              <p className="text-3xl font-bold text-gray-800">{assignments.length}</p>
               <p className="text-sm text-gray-500">Total Assignment</p>
             </div>
             <div className="text-right">
@@ -97,7 +138,20 @@ const StudentDashboard: React.FC = () => {
 
       <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">
         <h2 className="text-xl font-bold text-gray-800 mb-4">Your Assignment</h2>
-        <AssignmentList userRole="student" />
+        {loading ? (
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+            <span className="ml-2 text-gray-600">Loading assignments...</span>
+          </div>
+        ) : assignments.length === 0 ? (
+          <div className="text-center py-8">
+            <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+            <p className="text-gray-600">No assignments available yet</p>
+            <p className="text-sm text-gray-500 mt-2">Your teacher will assign work soon</p>
+          </div>
+        ) : (
+          <AssignmentList userRole="student" assignments={assignments} />
+        )}
       </div>
     </div>
   );

@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Loader2 } from 'lucide-react';
 import { Assignment, AssignmentDifficulty } from '../../types';
+import { assignmentService } from '../../services/assignmentService';
+import { useAuth } from '../../context/AuthContext';
 
 interface CreateAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (assignment: Omit<Assignment, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => void;
+  onSubmit: (assignment: Assignment) => void;
 }
 
 const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
@@ -13,6 +15,9 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
   onClose,
   onSubmit,
 }) => {
+  const { user } = useAuth();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,15 +30,36 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    onSubmit(formData);
-    setFormData({
-      title: '',
-      description: '',
-      dueDate: '',
-      timeLimit: 3,
-      difficulty: 'Medium',
+    
+    if (!user) {
+      setError('User not authenticated');
+      return;
+    }
+
+    setIsSubmitting(true);
+    setError(null);
+
+    assignmentService.createAssignment({
+      ...formData,
+      teacherId: user.id,
+    })
+    .then((assignment) => {
+      onSubmit(assignment);
+      setFormData({
+        title: '',
+        description: '',
+        dueDate: '',
+        timeLimit: 3,
+        difficulty: 'Medium',
+      });
+      onClose();
+    })
+    .catch((err) => {
+      setError(err.message || 'Failed to create assignment');
+    })
+    .finally(() => {
+      setIsSubmitting(false);
     });
-    onClose();
   };
 
   const handleClose = () => {
@@ -61,6 +87,12 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
         </div>
         
         <form onSubmit={handleSubmit} className="p-6">
+          {error && (
+            <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+              <p className="text-sm text-red-600">{error}</p>
+            </div>
+          )}
+          
           <div className="space-y-4">
             <div>
               <label htmlFor="title" className="block text-sm font-medium text-gray-700 mb-1">
@@ -72,6 +104,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
                 value={formData.title}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
                 className="w-full border border-slate-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                disabled={isSubmitting}
                 required
                 placeholder="Enter assignment title"
               />
@@ -86,6 +119,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="w-full border border-slate-200 rounded-md px-3 py-2 h-32 resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                disabled={isSubmitting}
                 required
                 placeholder="Describe the assignment requirements..."
               />
@@ -102,6 +136,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
                   value={formData.dueDate}
                   onChange={(e) => setFormData({ ...formData, dueDate: e.target.value })}
                   className="w-full border border-slate-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isSubmitting}
                   required
                   min={new Date().toISOString().split('T')[0]}
                 />
@@ -119,6 +154,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
                   value={formData.timeLimit}
                   onChange={(e) => setFormData({ ...formData, timeLimit: parseInt(e.target.value) })}
                   className="w-full border border-slate-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isSubmitting}
                   required
                 />
               </div>
@@ -132,6 +168,7 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
                   value={formData.difficulty}
                   onChange={(e) => setFormData({ ...formData, difficulty: e.target.value as AssignmentDifficulty })}
                   className="w-full border border-slate-200 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  disabled={isSubmitting}
                   required
                 >
                   <option value="Easy">Easy</option>
@@ -146,15 +183,18 @@ const CreateAssignmentModal: React.FC<CreateAssignmentModalProps> = ({
             <button
               type="button"
               onClick={handleClose}
-              className="px-4 py-2 border border-slate-200 rounded-md text-gray-600 hover:bg-gray-50 transition-colors"
+              className="px-4 py-2 border border-slate-200 rounded-md text-gray-600 hover:bg-gray-50 transition-colors disabled:opacity-50"
+              disabled={isSubmitting}
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors"
+              className="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center"
+              disabled={isSubmitting}
             >
-              Create Assignment
+              {isSubmitting && <Loader2 className="h-4 w-4 mr-2 animate-spin" />}
+              {isSubmitting ? 'Creating...' : 'Create Assignment'}
             </button>
           </div>
         </form>

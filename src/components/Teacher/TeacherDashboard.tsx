@@ -1,18 +1,45 @@
 import React, { useState } from 'react';
-import { mockAssignments, mockStudents, mockTeacher } from '../../data/mockData';
+import { mockStudents, mockTeacher } from '../../data/mockData';
 import { useAuth } from '../../context/AuthContext';
-import { Users, CheckCircle, Calendar, BarChart } from 'lucide-react';
+import { Users, CheckCircle, Calendar, BarChart, AlertCircle } from 'lucide-react';
 import AssignmentList from '../Shared/AssignmentList';
 import CreateAssignmentModal from './CreateAssignmentModal';
 import { useNavigate } from 'react-router-dom';
 import { Assignment } from '../../types';
+import { assignmentService } from '../../services/assignmentService';
+import { useEffect } from 'react';
 
 const TeacherDashboard: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'students'>('overview');
-  const [assignments, setAssignments] = useState(mockAssignments);
+  const [assignments, setAssignments] = useState<Assignment[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // Load assignments when component mounts or user changes
+  useEffect(() => {
+    if (user?.id) {
+      loadAssignments();
+    }
+  }, [user?.id]);
+
+  const loadAssignments = async () => {
+    if (!user?.id) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const teacherAssignments = await assignmentService.getTeacherAssignments(user.id);
+      setAssignments(teacherAssignments);
+    } catch (err) {
+      setError('Failed to load assignments');
+      console.error('Error loading assignments:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Calculate stats
   const totalAssignments = assignments.length;
@@ -23,17 +50,8 @@ const TeacherDashboard: React.FC = () => {
   // Calculate average score (single student)
   const averageScore = mockStudents.length > 0 ? mockStudents[0].averageScore : 0;
 
-  const handleCreateAssignment = (assignmentData: Omit<Assignment, 'id' | 'status' | 'createdAt' | 'updatedAt'>) => {
-    const newAssignment: Assignment = {
-      ...assignmentData,
-      id: `a${Date.now()}`,
-      status: 'Not Started',
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
-    
+  const handleCreateAssignment = (newAssignment: Assignment) => {
     setAssignments(prev => [newAssignment, ...prev]);
-    console.log('Created assignment:', newAssignment);
   };
 
   const handleStudentClick = (studentId: string) => {
@@ -93,6 +111,19 @@ const TeacherDashboard: React.FC = () => {
 
       {activeTab === 'overview' ? (
         <>
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center">
+              <AlertCircle className="h-5 w-5 text-red-500 mr-2" />
+              <span className="text-red-700">{error}</span>
+              <button 
+                onClick={loadAssignments}
+                className="ml-auto text-red-600 hover:text-red-800 text-sm font-medium"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="bg-white rounded-lg shadow p-6 border border-slate-200">
               <div className="flex items-center justify-between mb-4">
@@ -134,7 +165,25 @@ const TeacherDashboard: React.FC = () => {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
             <div className="lg:col-span-2 bg-white rounded-lg shadow-md border border-slate-200 p-6">
               <h2 className="text-xl font-bold text-gray-800 mb-4">Assignments</h2>
-              <AssignmentList userRole="teacher" assignments={assignments} />
+              {loading ? (
+                <div className="flex items-center justify-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+                  <span className="ml-2 text-gray-600">Loading assignments...</span>
+                </div>
+              ) : assignments.length === 0 ? (
+                <div className="text-center py-8">
+                  <Calendar className="h-12 w-12 text-gray-400 mx-auto mb-4" />
+                  <p className="text-gray-600 mb-4">No assignments created yet</p>
+                  <button 
+                    onClick={() => setIsCreateModalOpen(true)}
+                    className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors"
+                  >
+                    Create Your First Assignment
+                  </button>
+                </div>
+              ) : (
+                <AssignmentList userRole="teacher" assignments={assignments} />
+              )}
             </div>
             
             <div className="bg-white rounded-lg shadow-md border border-slate-200 p-6">

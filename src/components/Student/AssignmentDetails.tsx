@@ -1,8 +1,11 @@
 import React, { useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { mockAssignments, generateRandomReport } from '../../data/mockData';
+import { generateRandomReport } from '../../data/mockData';
 import { Play, Clock, ArrowLeft, AlertCircle } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
+import { assignmentService } from '../../services/assignmentService';
+import { Assignment } from '../../types';
+import { useEffect } from 'react';
 
 const AssignmentDetails: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -12,9 +15,67 @@ const AssignmentDetails: React.FC = () => {
   const [recordingTime, setRecordingTime] = useState(0);
   const [submitting, setSubmitting] = useState(false);
   const timerRef = useRef<number | null>(null);
+  const [assignment, setAssignment] = useState<Assignment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   
-  const assignment = mockAssignments.find(a => a.id === id);
+  useEffect(() => {
+    if (id) {
+      loadAssignment();
+    }
+  }, [id]);
+
+  const loadAssignment = async () => {
+    if (!id) return;
+    
+    try {
+      setLoading(true);
+      setError(null);
+      const assignmentData = await assignmentService.getAssignmentById(id);
+      setAssignment(assignmentData);
+    } catch (err) {
+      setError('Failed to load assignment');
+      console.error('Error loading assignment:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
   
+  if (loading) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex items-center justify-center py-12">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+          <span className="ml-3 text-gray-600">Loading assignment...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <div className="text-center py-12">
+          <AlertCircle className="h-12 w-12 text-red-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-800 mb-2">Error Loading Assignment</h2>
+          <p className="text-gray-600 mb-4">{error}</p>
+          <button 
+            onClick={loadAssignment}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700 transition-colors mr-2"
+          >
+            Try Again
+          </button>
+          <button 
+            onClick={() => navigate('/student')}
+            className="bg-gray-600 text-white px-4 py-2 rounded-md hover:bg-gray-700 transition-colors"
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (!assignment) {
     return (
       <div className="container mx-auto px-4 py-8 text-center">
